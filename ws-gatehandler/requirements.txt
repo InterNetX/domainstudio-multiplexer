@@ -1,0 +1,5 @@
+websockets==8.1
+asyncio==3.4.3
+asyncio-redis==0.16.0
+tornado==6.1
+nicelog==0.3

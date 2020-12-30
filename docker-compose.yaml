@@ -1,0 +1,27 @@
+version: "3"
+services:
+
+  clienthandler:
+    build: ./clienthandler
+    ports:
+      - "8888:8888"
+    environment:
+      USER: ${USER}
+      PASSWORD: ${PASSWORD}
+      RESTURL: ${RESTURL}
+      CONTEXT: ${CONTEXT}
+      PROXYPORT: ${PROXYPORT}
+      PROXY_PROCESS_COUNT: ${PROXY_PROCESS_COUNT}
+
+  redis:
+    build: ./redis
+    ports:
+      - "6379:6379"
+      
+  ws-gatehandler:
+    build: ./ws-gatehandler
+    environment:
+      USER: ${USER}
+      PASSWORD: ${PASSWORD}
+      WS_GATE_URL: ${WS_GATE_URL}
+      CONTEXT: ${CONTEXT}
