@@ -58,7 +58,7 @@ docker run -p 6379:6379 redis
 
 ## 🎈 Usage <a name="usage"></a>
 
-Just use Docker-compose
+Just use docker-compose
 ```
 docker-compose up
 ```
