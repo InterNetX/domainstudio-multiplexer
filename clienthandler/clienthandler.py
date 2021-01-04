@@ -116,8 +116,9 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
         self.write_message(str(rs))
 
     def on_close(self):
+        logging.info("Client-Websocket:{} deleting redis-messagequeue!".format(self.ctid))
         asyncio.ensure_future(self.redisqueue.delete_queue_from_redis())
-        logging.debug("WebSocket closed")
+        logging.info("Client-WebSocket:{} closed!".format(self.ctid))
 
 
 def make_app():
