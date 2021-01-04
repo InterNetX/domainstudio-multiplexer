@@ -30,8 +30,7 @@ WORKDIR /data
 COPY . .
 
 # Make Script executable
-RUN chmod +x ./redis_boot.sh && \
-    chmod +x netcommand.sh
+RUN chmod +x ./redis_boot.sh
 
 # Define default command.
 CMD ["/bin/sh","./redis_boot.sh"]

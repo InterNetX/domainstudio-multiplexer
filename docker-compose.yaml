@@ -4,7 +4,7 @@ services:
   clienthandler:
     build: ./clienthandler
     ports:
-      - "8888:8888"
+      - "${PROXYPORT}:${PROXYPORT}"
     environment:
       USER: ${USER}
       PASSWORD: ${PASSWORD}
