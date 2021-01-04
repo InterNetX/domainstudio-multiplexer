@@ -8,8 +8,6 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/InterNetX/domainstudio-multiplexer/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/InterNetX/domainstudio-multiplexer/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -31,7 +29,7 @@
 - [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
-![Structure](https://github.com/InterNetX/domainstudio-multiplexer/blob/main/images/structure.jpg)
+![Structure](https://raw.github.com/InterNetX/domainstudio-multiplexer/blob/main/images/structure.jpg)
 
 This Proxy can be used to authorize DomainStudio requests without sharing any credentials with the client. 
 
