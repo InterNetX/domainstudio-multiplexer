@@ -26,3 +26,5 @@ class RedisQueue(object):
     
     async def delete_queue_from_redis(self):
         await self.__db.delete([self.key])
+        self.__db.close()
+    

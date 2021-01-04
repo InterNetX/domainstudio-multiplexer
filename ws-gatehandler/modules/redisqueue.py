@@ -16,6 +16,5 @@ class RedisQueue(object):
     async def put(self, item):
         """Put item into the queue."""
         await self.__db.rpush(self.key, [item])
-
-    async def delete_queue_from_redis(self):
-        await self.__db.delete([self.key])
+    def __del__(self):
+        self.__db.close()
