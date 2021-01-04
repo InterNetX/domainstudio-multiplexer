@@ -65,7 +65,7 @@ docker-compose up
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
-Add additional notes about how to deploy this on a live system.
+- [Usage](#usage)
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
