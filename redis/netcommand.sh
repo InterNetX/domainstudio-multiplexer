@@ -1,1 +1,0 @@
-netstat -anp | grep :6379 | grep ESTABLISHED | wc -l
