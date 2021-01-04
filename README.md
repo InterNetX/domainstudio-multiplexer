@@ -31,6 +31,7 @@
 - [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
+![Structure](https://github.com/InterNetX/domainstudio-multiplexer/blob/main/images/structure.jpg)
 
 This Proxy can be used to authorize DomainStudio requests without sharing any credentials with the client. 
 
@@ -82,4 +83,5 @@ See also the list of [contributors](https://github.com/InterNetX/domainstudio-mu
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 
 original redis-docker file: [redis](https://github.com/dockerfile/redis/blob/master/Dockerfile)
+
 original redisqueue implementation: [redisqueue](http://peter-hoffmann.com/2012/python-simple-queue-redis-queue.html)
