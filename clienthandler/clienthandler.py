@@ -12,8 +12,25 @@ from nicelog import setup_logging
 import redisqueue
 
 
-async def domainstudio_request(ctid, data):
+async def domainstudio_request(ctid, data, message=None):
     url = os.getenv('RESTURL')
+    if message:
+        req = message
+        headers = {
+            "X-Domainrobot-WS": "ASYNC",
+            "User-Agent": "domainstudio-multiplexer-instance",
+            "X-Domainrobot-Context": os.getenv('CONTEXT')
+        }
+        try:
+            async with httpx.AsyncClient(auth=(os.getenv('USER'), os.getenv('PASSWORD'))) as client:
+                res = await client.post(url=url+"/domainstudio?ctid="+ctid, json=req, headers=headers, timeout=5)
+                logging.info(
+                    "Sending REST request to {} in the name of Client: {} .".format(url, ctid))
+        except Exception as e:
+            logging.error(
+                "Error ({}) while sending REST request to {} in the name of Client: {}".format(e, url, ctid))
+            return {"AutoDNS-API": "Error"}
+        return res.json()
     search_token = data.get("search_token")
     tld = data.get("tld", "")
 
@@ -38,9 +55,11 @@ async def domainstudio_request(ctid, data):
     try:
         async with httpx.AsyncClient(auth=(os.getenv('USER'), os.getenv('PASSWORD'))) as client:
             res = await client.post(url=url+"/domainstudio?ctid="+ctid, json=req, headers=headers, timeout=5)
-            logging.info("Sending REST request to {} in the name of Client: {} .".format(url, ctid))
+            logging.info(
+                "Sending REST request to {} in the name of Client: {} .".format(url, ctid))
     except Exception as e:
-        logging.error("Error ({}) while sending REST request to {} in the name of Client: {}".format(e, url, ctid))
+        logging.error(
+            "Error ({}) while sending REST request to {} in the name of Client: {}".format(e, url, ctid))
         return {"AutoDNS-API": "Error"}
     return res.json()
 
@@ -73,7 +92,7 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
         return True
 
     # for use with debug frontend
-    async def on_message(self, message):
+    async def debug_on_message(self, message):
         logging.debug("Transmitting message {}".format(message))
         message = {"searchtoken": message.split(
             ";")[0], "tlds": message.split(";")[1]}
@@ -86,18 +105,14 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
             return
 
     # if message is received decode it from json and pass it authorized to the Json API
-    async def later_on_message(self, message):
+    async def on_message(self, message):
         try:
-            message = str(message.split(";")[0])
             logging.debug("RECEIVED {} from Client!".format(message))
             message = json_decode(message)
         except:
             self.write_message({"type": "MultiplexerParsingError"})
             return
-        remote_ip = self.request.headers.get("X-Real-IP") or \
-            self.request.headers.get("X-Forwarded-For") or \
-            self.request.remote_ip
-        rs = await domainstudio_request(self.ctid, message)
+        rs = await domainstudio_request(self.ctid, {}, message=message)
         self.write_message(str(rs))
 
     def on_close(self):
@@ -115,7 +130,8 @@ if __name__ == "__main__":
     setup_logging()
     port = int(os.getenv('PROXYPORT'))
     processes = int(os.getenv('PROXY_PROCESS_COUNT'))
-    logging.info("Starting Proxy on {} with {} processes!".format(port, processes))
+    logging.info(
+        "Starting Proxy on {} with {} processes!".format(port, processes))
     app = make_app()
     clienthandler = tornado.httpserver.HTTPServer(app)
     clienthandler.bind(port)
