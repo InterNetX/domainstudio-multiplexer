@@ -45,7 +45,15 @@ You'll need working Docker and Docker-compose.
 (To modify: Each container directory has its own requirements.txt file. Use Python3.9 and the requirements)
 ```
 
-### Installing
+## 🎈 Usage <a name="usage"></a>
+
+Create a .env file based on the example in the projects root directory after that,
+just use docker-compose:
+```
+docker-compose up
+```
+
+### Installing for Development Testing
 
 Git clone and pip install all requirements.
 A redis installation is necessary in order to test modifications, you can accomplish this by running just the redis docker image.
@@ -55,13 +63,12 @@ cd redis
 docker build -t redis .
 docker run -p 6379:6379 redis
 ```
+Alternatively just clone the project and run:
 
-## 🎈 Usage <a name="usage"></a>
-
-Just use docker-compose
 ```
-docker-compose up
+docker-compose up --build --force-recreate 
 ```
+to rebuild all containers after you changed something.
 
 ## 🚀 Deployment <a name = "deployment"></a>
 

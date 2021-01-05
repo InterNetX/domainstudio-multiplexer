@@ -1,7 +1,5 @@
 import asyncio
 import os
-import random
-import time 
 import unicodedata
 import logging
 from tornado.escape import json_decode, json_encode
@@ -40,7 +38,12 @@ async def main():
             redis = None
         except asyncio.TimeoutError:
             pass
-        
+        except KeyError:
+            pass
+        except ValueError:
+            pass
+
+#start message handling loop and restart if it fails       
 if __name__ == "__main__":
     setup_logging()
     while True:
@@ -48,8 +51,7 @@ if __name__ == "__main__":
             asyncio.run(main())
         except Exception as e:
             try:
-                logging.error(str(e.with_traceback()))
+                logging.error(str(e), str(e.with_traceback()))
             except TypeError:
                 logging.error(str(e))
-            logging.warning("WS-GATE-HANDLER Crashed! Restarting It IN 5s!")
-            time.sleep(5)
+            logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")

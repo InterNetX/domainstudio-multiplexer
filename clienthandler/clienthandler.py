@@ -11,42 +11,12 @@ from nicelog import setup_logging
 
 import redisqueue
 
+# request the client-request with the proxies authorization while adding ctid for later
 
-async def domainstudio_request(ctid, data, message=None):
+
+async def domainstudio_request(ctid, message=None):
     url = os.getenv('RESTURL')
-    if message:
-        req = message
-        headers = {
-            "X-Domainrobot-WS": "ASYNC",
-            "User-Agent": "domainstudio-multiplexer-instance",
-            "X-Domainrobot-Context": os.getenv('CONTEXT')
-        }
-        try:
-            async with httpx.AsyncClient(auth=(os.getenv('USER'), os.getenv('PASSWORD'))) as client:
-                res = await client.post(url=url+"/domainstudio?ctid="+ctid, json=req, headers=headers, timeout=5)
-                logging.info(
-                    "Sending REST request to {} in the name of Client: {} .".format(url, ctid))
-        except Exception as e:
-            logging.error(
-                "Error ({}) while sending REST request to {} in the name of Client: {}".format(e, url, ctid))
-            return {"AutoDNS-API": "Error"}
-        return res.json()
-    search_token = data.get("search_token")
-    tld = data.get("tld", "")
-
-    req = {
-        "currency": "USD",
-        "searchToken": search_token,
-        "sources": {
-            "recommended": {
-                "services": ["WHOIS"]
-            },
-            "initial": {
-                "services": ["WHOIS"],
-                "tlds": tld,
-            }
-        }
-    }
+    req = message
     headers = {
         "X-Domainrobot-WS": "ASYNC",
         "User-Agent": "domainstudio-multiplexer-instance",
@@ -63,8 +33,12 @@ async def domainstudio_request(ctid, data, message=None):
         return {"AutoDNS-API": "Error"}
     return res.json()
 
+# WebsocketHandler for Clients
+
 
 class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
+
+    # one per client listening for the queue that was created with the ctid of the client
     async def listen_routine(self):
         while True:
             try:
@@ -78,7 +52,8 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
                 break
             except tornado.websocket.WebSocketClosedError:
                 break
-
+            
+    # on connection generate unique ctid and redis-message-queue with it as name
     async def open(self):
         remote_ip = self.request.headers.get("X-Real-IP") or \
             self.request.headers.get("X-Forwarded-For") or \
@@ -91,32 +66,22 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-    # for use with debug frontend
-    async def debug_on_message(self, message):
-        logging.debug("Transmitting message {}".format(message))
-        message = {"searchtoken": message.split(
-            ";")[0], "tlds": message.split(";")[1]}
-        search = message.get("searchtoken")
-        tlds = message.get("tlds").split(" ")
-        rs = await domainstudio_request(self.ctid, {"search_token": search, "tld": tlds})
-        try:
-            self.write_message(str(rs))
-        except tornado.websocket.WebSocketClosedError:
-            return
-
     # if message is received decode it from json and pass it authorized to the Json API
     async def on_message(self, message):
         try:
-            logging.debug("RECEIVED {} from Client!".format(message))
+            logging.debug(
+                "RECEIVED {} from Client: {}!".format(message, self.ctid))
             message = json_decode(message)
         except:
             self.write_message({"type": "MultiplexerParsingError"})
             return
-        rs = await domainstudio_request(self.ctid, {}, message=message)
+        rs = await domainstudio_request(self.ctid, message=message)
         self.write_message(str(rs))
 
+    # on close delete queue and disconnect from redis before closing the socket successfully
     def on_close(self):
-        logging.info("Client-Websocket:{} deleting redis-messagequeue!".format(self.ctid))
+        logging.info(
+            "Client-Websocket:{} deleting redis-messagequeue!".format(self.ctid))
         asyncio.ensure_future(self.redisqueue.delete_queue_from_redis())
         logging.info("Client-WebSocket:{} closed!".format(self.ctid))
 
