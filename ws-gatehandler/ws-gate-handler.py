@@ -11,7 +11,7 @@ import redisqueue
 async def connect_to_gate():
     url = str("wss://"+os.getenv('USER')+":"+os.getenv('PASSWORD')+"@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
-    websocket = await asyncio.wait_for(websockets.connect(url,extra_headers={"X-Domainrobot-Context":1}), 2)
+    websocket = await asyncio.wait_for(websockets.connect(url,extra_headers={"X-Domainrobot-Context":1},ping_interval=60), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
@@ -49,6 +49,8 @@ if __name__ == "__main__":
     while True:
         try:
             asyncio.run(main())
+        except websockets.ProtocolError:
+            pass
         except Exception as e:
             try:
                 logging.error(str(e), str(e.with_traceback()))
