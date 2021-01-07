@@ -49,7 +49,8 @@ if __name__ == "__main__":
     while True:
         try:
             asyncio.run(main())
-        except websockets.ProtocolError:
+        except websockets.WebSocketException:
+            logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
         except Exception as e:
             try:
