@@ -4,5 +4,6 @@ COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 EXPOSE 8888
 COPY . .
-COPY ./modules/redisqueue.py .
+RUN python3 setup.py sdist
+COPY ./modules/* ./
 CMD ["python3", "clienthandler.py"]

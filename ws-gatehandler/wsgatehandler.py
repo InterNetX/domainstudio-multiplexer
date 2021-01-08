@@ -30,12 +30,18 @@ async def main():
             response = response.split("\n\n")[-1]
             response = ''.join(
                 c for c in response if unicodedata.category(c) != 'Cc')
-            rsp = json_decode(response)
-            ctid = rsp.get("ctid")
-            redis = redisqueue.RedisQueue(ctid)
-            await redis.init()
-            await redis.put(json_encode(rsp))
-            redis = None
+            try:
+                rsp = json_decode(response)
+                ctid = rsp.get("ctid")
+            except:
+                continue
+            if ctid:
+                redis = redisqueue.RedisQueue(ctid)
+                await redis.init()
+                await redis.put(json_encode(rsp))
+                redis = None
+            else:
+                continue
         except asyncio.TimeoutError:
             pass
         except KeyError:
@@ -52,9 +58,9 @@ if __name__ == "__main__":
         except websockets.WebSocketException:
             logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
-        except Exception as e:
-            try:
-                logging.error(str(e), str(e.with_traceback()))
-            except TypeError:
-                logging.error(str(e))
-            logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
+        # except Exception as e:
+        #     try:
+        #         logging.error(str(e)+ str(e.with_traceback()))
+        #     except TypeError:
+        #         logging.error(str(e))
+        #     logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")

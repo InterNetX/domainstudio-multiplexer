@@ -5,3 +5,4 @@ simplejson==3.17.2
 tornado==6.1
 websockets==8.1
 nicelog==0.3
+cython

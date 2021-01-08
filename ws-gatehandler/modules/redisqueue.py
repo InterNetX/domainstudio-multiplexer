@@ -9,8 +9,7 @@ class RedisQueue(object):
     """Simple Queue with Redis Backend"""
 
     # initialize object
-    def __init__(self, name, namespace='queues', **redis_kwargs):
-        self.redis_kwargs = redis_kwargs
+    def __init__(self, name, namespace='queues'):
         self.key = '%s:%s' % (namespace, name)
 
     # initialize connection seperately because of inability to use asyncio in the initializer
