@@ -58,9 +58,9 @@ if __name__ == "__main__":
         except websockets.WebSocketException:
             logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
-        # except Exception as e:
-        #     try:
-        #         logging.error(str(e)+ str(e.with_traceback()))
-        #     except TypeError:
-        #         logging.error(str(e))
-        #     logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
+        except Exception as e:
+            try:
+                 logging.error(str(e)+ str(e.with_traceback()))
+            except TypeError:
+                 logging.error(str(e))
+            logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
