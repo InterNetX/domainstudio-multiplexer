@@ -50,7 +50,7 @@ You'll need working Docker and Docker-compose.
 Create a .env file based on the example in the projects root directory after that,
 just use docker-compose:
 ```
-docker-compose up
+docker-compose up --env <enf-file>
 ```
 
 ### Installing for Development Testing
