@@ -53,6 +53,14 @@ just use docker-compose:
 docker-compose up --env <enf-file>
 ```
 
+### Usage of the Proxy as Client 
+
+The client can connect to the Proxies: ws://hostanme:portname/dsws and will get it's own message queue.
+Afterwards the client can send a json parsable Domainstudio request as specified in:
+https://help.internetx.com/display/APIADDITIONALDE/DomainStudio+Guide
+For Each Request the Client will be forwarded the direct REST-response and will get it's Messages back asynchronously.
+
+
 ### Installing for Development Testing
 
 Git clone and pip install all requirements.
@@ -68,7 +76,7 @@ Alternatively just clone the project and run:
 ```
 docker-compose up --build --force-recreate 
 ```
-to rebuild all containers after you changed something.
+To rebuild all containers after you changed something.
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
