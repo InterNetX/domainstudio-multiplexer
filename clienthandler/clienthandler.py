@@ -49,7 +49,8 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
             except tornado.websocket.WebSocketClosedError:
                 break
             
-    # on connection generate unique ctid and redis-message-queue with it as name
+    # on connection generate unique ctid and redis-message-queue with it (the ctid) as name
+    # allows the socket handler to sort messages into the addressees queue
     async def open(self):
         remote_ip = self.request.headers.get("X-Real-IP") or \
             self.request.headers.get("X-Forwarded-For") or \
@@ -62,7 +63,7 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-    # if message is received decode it from json and pass it authorized to the Json API
+    # if message is received, decode it from json and pass it authorized to the Json API
     async def on_message(self, message):
         try:
             logging.debug(
