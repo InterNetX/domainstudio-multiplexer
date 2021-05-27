@@ -59,7 +59,37 @@ The client can connect to the Proxies: ws://hostanme:portname/dsws and will get 
 Afterwards the client can send a json parsable domainstudio-request as specified in:
 https://help.internetx.com/display/APIADDITIONALDE/DomainStudio+Guide
 For each request the Client will be forwarded the direct REST-response and will get the websocket-gates messages back.
-
+For example passing
+```
+{
+  "currency": "USD",
+  "searchToken": "house",
+  "sources": {
+    "recommended": {
+      "services": ["WHOIS"],
+      ...
+    },
+    ...
+  }
+}
+```
+as a websocket message to the proxy will result in something like this coming back:
+```
+{
+  "stid": "20190702-stid",
+  "ctid": "myRequestID",
+  "data": [
+    {
+      "domain": "house.com",
+      "source": "RECOMMENDED",
+      "services": {
+        "whois": ...
+      }
+    },
+    ...
+  ]
+}
+```
 
 ### Installing for Development and Testing
 
