@@ -61,7 +61,7 @@ https://help.internetx.com/display/APIADDITIONALDE/DomainStudio+Guide
 For each request the Client will be forwarded the direct REST-response and will get the websocket-gates messages back.
 
 
-### Installing for Development Testing
+### Installing for Development and Testing
 
 Git clone and pip install all requirements.
 A redis installation is necessary in order to test modifications, you can accomplish this by running just the redis docker image.
