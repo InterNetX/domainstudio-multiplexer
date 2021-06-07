@@ -3,7 +3,7 @@
  <img width=200px height=200px src="https://login.autodns.com/resources/img/autodns_new_logo_4c.svg" alt="Project logo"></a>
 </p>
 
-<h3 align="center">domainstudio-multiplexer</h3>
+<h3 align="center">domainstudio-multiplexer BETA</h3>
 
 <div align="center">
 
