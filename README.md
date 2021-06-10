@@ -14,7 +14,7 @@
 
 ---
 
-<p align="center"> A Multiplexing Proxy used for async DomainStudio-Operations. It communicates over a single websocket with the DomainStudio and uses each Frontend/Clientconnection to redistribute the Results, so that each client only receives messages that were caused by one of it's own requests. The client can send unauthorized messages in Json parsable format as ws-message to the Proxy which will send them to the normal AutoDNS Json API (authorized via the ProxyUser). These Results are then fetched from the WS-Gate and transmitted to the client.
+<p align="center"> A Multiplexing-Proxy used for async DomainStudio-Operations. It communicates over a single WebSocket with the DomainStudio and uses each frontend/client connection to redistribute the results so that each client only receives messages that were caused by one of its own requests. The client can send unauthorized messages in JSON parsable format as ws-message to the proxy which will send them to the normal AutoDNS JSON API (authorized via the ProxyUser). These results are then fetched from the WS-Gate and transmitted to the client.
     <br> 
 </p>
 
@@ -55,10 +55,10 @@ docker-compose up --env <enf-file>
 
 ### Usage of the Proxy as Client 
 
-The client can connect to the Proxies: ws://hostanme:portname/dsws and will get it's own message queue.
-Afterwards the client can send a json parsable domainstudio-request as specified in:
+The client can connect to the Proxies: ws://hostanme:port/dsws and will get its own message queue.
+Afterwards, the client can send a JSON parsable domainstudio-request as specified in:
 https://help.internetx.com/display/APIADDITIONALDE/DomainStudio+Guide
-For each request the Client will be forwarded the direct REST-response and will get the websocket-gates messages back.
+For each request, the Client will be forwarded the direct REST response and will get the WebSocket-gates messages back.
 For example passing
 ```
 {
@@ -73,7 +73,7 @@ For example passing
   }
 }
 ```
-as a websocket message to the proxy will result in something like this coming back:
+as a WebSocket message to the proxy will result in something like this coming back:
 ```
 {
   "stid": "20190702-stid",
@@ -94,14 +94,14 @@ as a websocket message to the proxy will result in something like this coming ba
 ### Installing for Development and Testing
 
 Git clone and pip install all requirements.
-A redis installation is necessary in order to test modifications, you can accomplish this by running just the redis docker image.
+A Redis installation is necessary to test modifications, you can accomplish this by running just the Redis docker image.
 
 ```
-cd redis
+cd Redis
 docker build -t redis .
 docker run -p 6379:6379 redis
 ```
-Alternatively just clone the project and run:
+Alternatively, just clone the project and run:
 
 ```
 docker-compose up --build --force-recreate 
