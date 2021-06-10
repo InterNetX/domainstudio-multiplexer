@@ -17,7 +17,7 @@ async def connect_to_gate():
               "@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
     websocket = await asyncio.wait_for(websockets.connect(url,
-                                                          extra_headers={"X-Domainrobot-Context": 1}), 2)
+        extra_headers={"X-Domainrobot-Context": 1}), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
