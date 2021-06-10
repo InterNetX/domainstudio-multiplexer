@@ -2,13 +2,13 @@
    and returns messages to the redis queues"""
 import asyncio
 import os
+import time
 import unicodedata
 import logging
 from tornado.escape import json_decode, json_encode
 import websockets
 from nicelog import setup_logging
 import redisqueue
-import time
 
 
 async def connect_to_gate():
@@ -17,7 +17,7 @@ async def connect_to_gate():
               "@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
     websocket = await asyncio.wait_for(websockets.connect(url,
-        extra_headers={"X-Domainrobot-Context": 1}), 2)
+                                                          extra_headers={"X-Domainrobot-Context": 1}), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
@@ -61,12 +61,18 @@ async def main():
 if __name__ == "__main__":
     """start message handling loop and restart if it fails"""
     setup_logging()
+    error_count = 0
     while True:
         try:
             LOOP = asyncio.get_event_loop()
             LOOP.run_until_complete(main())
         except websockets.WebSocketException:
-            logging.debug("WS-GATE-Connection Crashed! Restarting It!")
+            error_count += 1
+            logging.debug("WS-GATE-Connection Crashed! Restarting it!")
+            if error_count % 5 == 0:
+                error_count = 0
+                logging.info("Waiting 10s before trying again.")
+                time.sleep(10)
             pass
         except Exception as exception:
             try:
@@ -74,5 +80,4 @@ if __name__ == "__main__":
                               str(exception.with_traceback()))
             except TypeError:
                 logging.error(str(exception))
-            logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
-            time.sleep(5)
+            logging.warning("WS-GATE-HANDLER Crashed! Restarting it!")
