@@ -62,8 +62,8 @@ if __name__ == "__main__":
     setup_logging()
     while True:
         try:
-            loop = asyncio.get_event_loop()
-            result = loop.run_until_complete(main())
+            LOOP = asyncio.get_event_loop()
+            LOOP.run_until_complete(main())
         except websockets.WebSocketException:
             logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
