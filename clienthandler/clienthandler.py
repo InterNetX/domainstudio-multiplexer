@@ -12,6 +12,8 @@ from nicelog import setup_logging
 import redisqueue
 
 # request the client-request with the proxies authorization while adding ctid for later
+
+
 async def domainstudio_request(ctid, message=None):
     url = os.getenv('RESTURL')
     req = message
@@ -32,6 +34,8 @@ async def domainstudio_request(ctid, message=None):
     return res.json()
 
 # WebsocketHandler for Clients
+
+
 class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
 
     # one per client listening for the queue that was created with the ctid of the client
@@ -48,7 +52,7 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
                 break
             except tornado.websocket.WebSocketClosedError:
                 break
-            
+
     # on connection generate unique ctid and redis-message-queue with it (the ctid) as name
     # allows the socket handler to sort messages into the addressees queue
     async def open(self):

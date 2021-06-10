@@ -7,11 +7,14 @@ import websockets
 from nicelog import setup_logging
 import redisqueue
 
-#establish the multiplexed connection to the websocket-gate
+# establish the multiplexed connection to the websocket-gate
+
+
 async def connect_to_gate():
-    url = str("wss://"+os.getenv('USER')+":"+os.getenv('PASSWORD')+"@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
+    url = str("wss://"+os.getenv('USER')+":"+os.getenv('PASSWORD') +
+              "@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
-    websocket = await asyncio.wait_for(websockets.connect(url,extra_headers={"X-Domainrobot-Context":1}), 2)
+    websocket = await asyncio.wait_for(websockets.connect(url, extra_headers={"X-Domainrobot-Context": 1}), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
@@ -19,7 +22,9 @@ async def connect_to_gate():
     await websocket.send("SUBSCRIBE\nid:0\ndestination:/\nack:auto\n\n\0")
     return auto_ws
 
-#iterate through messages and write them to their ctid redis queues
+# iterate through messages and write them to their ctid redis queues
+
+
 async def main():
     logging.info("Trying to establish the Connection to the WS-Gate!")
     auto_ws = await connect_to_gate()
@@ -49,7 +54,7 @@ async def main():
         except ValueError:
             pass
 
-#start message handling loop and restart if it fails       
+# start message handling loop and restart if it fails
 if __name__ == "__main__":
     setup_logging()
     while True:
@@ -58,9 +63,9 @@ if __name__ == "__main__":
         except websockets.WebSocketException:
             logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
-        except Exception as e:
+        except Exception as exception:
             try:
-                 logging.error(str(e)+ str(e.with_traceback()))
+                logging.error(str(exception) + str(exception.with_traceback()))
             except TypeError:
-                 logging.error(str(e))
+                logging.error(str(exception))
             logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")

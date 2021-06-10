@@ -1,3 +1,4 @@
+#!/bin/bash
 python3 redis_cleaner.py &
 redis-server /etc/redis/redis.conf &
 sleep 2
