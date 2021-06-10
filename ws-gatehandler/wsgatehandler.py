@@ -1,4 +1,5 @@
-"""establishes the multiplexed connection to the websocket-gate and returns messages to the redis queues"""
+"""establishes the multiplexed connection to the websocket-gate
+   and returns messages to the redis queues"""
 import asyncio
 import os
 import unicodedata
@@ -15,7 +16,7 @@ async def connect_to_gate():
               "@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
     websocket = await asyncio.wait_for(websockets.connect(url,
-                                                          extra_headers={"X-Domainrobot-Context": 1}), 2)
+        extra_headers={"X-Domainrobot-Context": 1}), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
@@ -61,7 +62,8 @@ if __name__ == "__main__":
     setup_logging()
     while True:
         try:
-            asyncio.run(main())
+            loop = asyncio.get_event_loop()
+            result = loop.run_until_complete(main())
         except websockets.WebSocketException:
             logging.debug("WS-GATE-Connection Crashed! Restarting It!")
             pass
