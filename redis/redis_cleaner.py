@@ -17,8 +17,9 @@ def main():
             os.system("redis-cli flushall")
             time.sleep(600)
         elif redis_connections_open > 0 and not connections_since_last_clean:
-            logging.debug("Currently there are {} clients connected to the Redis Message pool. Waiting for no traffic before flushing Redis!".format(
-                redis_connections_open))
+            logging.debug(
+                "Currently there are {} clients connected to the Redis Message pool.\
+                Waiting for no traffic before flushing Redis!".format(redis_connections_open))
             connections_since_last_clean = True
             time.sleep(1)
 

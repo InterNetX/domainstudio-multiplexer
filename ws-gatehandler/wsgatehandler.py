@@ -1,3 +1,4 @@
+"""establishes the multiplexed connection to the websocket-gate and returns messages to the redis queues"""
 import asyncio
 import os
 import unicodedata
@@ -7,14 +8,14 @@ import websockets
 from nicelog import setup_logging
 import redisqueue
 
-# establish the multiplexed connection to the websocket-gate
-
 
 async def connect_to_gate():
+    """establishes the multiplexed connection to the websocket-gate"""
     url = str("wss://"+os.getenv('USER')+":"+os.getenv('PASSWORD') +
               "@"+((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
-    websocket = await asyncio.wait_for(websockets.connect(url, extra_headers={"X-Domainrobot-Context": 1}), 2)
+    websocket = await asyncio.wait_for(websockets.connect(url,
+                                                          extra_headers={"X-Domainrobot-Context": 1}), 2)
     auto_ws = websocket
     await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
     response = await asyncio.wait_for(websocket.recv(), 1)
@@ -26,6 +27,7 @@ async def connect_to_gate():
 
 
 async def main():
+    """main loop of the gate connector"""
     logging.info("Trying to establish the Connection to the WS-Gate!")
     auto_ws = await connect_to_gate()
     logging.info("Ws-Gate-Connection established starting Message-Listening!")
@@ -54,8 +56,8 @@ async def main():
         except ValueError:
             pass
 
-# start message handling loop and restart if it fails
 if __name__ == "__main__":
+    """start message handling loop and restart if it fails"""
     setup_logging()
     while True:
         try:
@@ -65,7 +67,8 @@ if __name__ == "__main__":
             pass
         except Exception as exception:
             try:
-                logging.error("%e", str(exception) + str(exception.with_traceback()))
+                logging.error("%e", str(exception) +
+                              str(exception.with_traceback()))
             except TypeError:
                 logging.error(str(exception))
             logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
