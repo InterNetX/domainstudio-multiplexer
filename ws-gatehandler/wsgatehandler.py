@@ -8,6 +8,7 @@ from tornado.escape import json_decode, json_encode
 import websockets
 from nicelog import setup_logging
 import redisqueue
+import time
 
 
 async def connect_to_gate():
@@ -74,3 +75,4 @@ if __name__ == "__main__":
             except TypeError:
                 logging.error(str(exception))
             logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")
+            time.sleep(5)
