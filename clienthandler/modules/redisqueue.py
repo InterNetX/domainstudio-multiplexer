@@ -5,7 +5,7 @@ import asyncio
 logging.getLogger("asyncio_redis").setLevel(logging.WARNING)
 
 
-class RedisQueue(object):
+class RedisQueue():
     """Simple Queue with Redis Backend"""
 
     def __init__(self, name, namespace='queues'):

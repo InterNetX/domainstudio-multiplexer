@@ -65,7 +65,7 @@ if __name__ == "__main__":
             pass
         except Exception as exception:
             try:
-                logging.error(str(exception) + str(exception.with_traceback()))
+                logging.error("%e", str(exception) + str(exception.with_traceback()))
             except TypeError:
                 logging.error(str(exception))
             logging.warning("WS-GATE-HANDLER Crashed! Restarting It!")

@@ -5,7 +5,7 @@ import asyncio_redis as redis
 logging.getLogger("asyncio_redis").setLevel(logging.WARNING)
 
 
-class RedisQueue(object):
+class RedisQueue():
     """Simple Queue with Redis Backend"""
 
     # initialize object
