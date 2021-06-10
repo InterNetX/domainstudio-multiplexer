@@ -69,7 +69,7 @@ if __name__ == "__main__":
             pass
         except Exception as exception:
             try:
-                logging.error("%e", str(exception) +
+                logging.error("%s", str(exception) +
                               str(exception.with_traceback()))
             except TypeError:
                 logging.error(str(exception))
