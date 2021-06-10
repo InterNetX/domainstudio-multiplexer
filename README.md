@@ -55,7 +55,7 @@ docker-compose up --env <enf-file>
 
 ### Usage of the Proxy as Client 
 
-The client can connect to the Proxies: ws://hostanme:port/dsws and will get its own message queue.
+The client can connect to the proxy-url: ws://hostanme:port/dsws and will get its own message queue.
 Afterwards, the client can send a JSON parsable domainstudio-request as specified in:
 https://help.internetx.com/display/APIADDITIONALDE/DomainStudio+Guide
 For each request, the Client will be forwarded the direct REST response and will get the WebSocket-gates messages back.
