@@ -3,6 +3,7 @@ services:
 
   clienthandler:
     build: ./clienthandler
+    restart: always
     ports:
       - "${PROXYPORT}:${PROXYPORT}"
     environment:
@@ -15,11 +16,13 @@ services:
 
   redis:
     build: ./redis
+    restart: always
     ports:
       - "6379:6379"
       
   ws-gatehandler:
     build: ./ws-gatehandler
+    restart: always
     environment:
       USER: ${USER}
       PASSWORD: ${PASSWORD}
