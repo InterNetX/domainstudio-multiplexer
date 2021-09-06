@@ -36,6 +36,7 @@ async def connect_to_gate(auth_cookie_header: dict):
     """establishes the multiplexed connection to the websocket-gate"""
     url = str("wss://" +((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
     logging.info(url)
+
     extra_headers = {"X-Domainrobot-Context": os.getenv("CONTEXT")}
     extra_headers.update(auth_cookie_header)
     print(extra_headers)
