@@ -19,7 +19,7 @@ async def domainstudio_request(ctid, message=None):
     req = message
     headers = {
         "X-Domainrobot-WS": "ASYNC",
-        "User-Agent": "domainstudio-multiplexer-instance",
+        "User-Agent": "websocket-multiplexer",
         "X-Domainrobot-Context": os.getenv('CONTEXT')
     }
     try:

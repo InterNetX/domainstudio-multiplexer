@@ -7,3 +7,4 @@ tornado==6.1
 websockets==8.1
 nicelog==0.3
 cython
+requests
