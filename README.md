@@ -8,7 +8,6 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/InterNetX/domainstudio-multiplexer/graphs/contributors)
-[![deepcode](https://www.deepcode.ai/api/gh/badge?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybTEiOiJnaCIsIm93bmVyMSI6InRoZWVtcGVyb3I2NiIsInJlcG8xIjoiZG9tYWluc3R1ZGlvLW11bHRpcGxleGVyIiwiaW5jbHVkZUxpbnQiOmZhbHNlLCJhdXRob3JJZCI6MjQxNDUsImlhdCI6MTYyMzQ1MDUwMn0.y_16upSKraoJZMSahO55r3wn9bh1kt_KPekcVwoKw9A)](https://www.deepcode.ai/app/gh/theemperor66/domainstudio-multiplexer/_/dashboard?utm_content=gh%2Ftheemperor66%2Fdomainstudio-multiplexer)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
