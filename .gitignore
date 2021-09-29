@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+utilities/
 lib64/
 parts/
 sdist/
@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 .dccache
+!/utilities/redisqueue/__init__.py

@@ -1,20 +1,21 @@
 import asyncio
 import logging
+import os
+from abc import ABC
+from json import JSONDecodeError
+
 import asyncio_redis
+import httpx
+import redisqueue
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
-from tornado.escape import json_decode
-import httpx
-import os
 from nicelog import setup_logging
-
-import redisqueue
-
-# request the client-request with the proxies authorization while adding ctid for later
+from tornado.escape import json_decode
 
 
 async def domainstudio_request(ctid, message=None):
+    """request the client-request with the proxies authorization while adding ctid for later"""
     url = os.getenv('RESTURL')
     req = message
     headers = {
@@ -24,7 +25,7 @@ async def domainstudio_request(ctid, message=None):
     }
     try:
         async with httpx.AsyncClient(auth=(os.getenv('USER'), os.getenv('PASSWORD'))) as client:
-            res = await client.post(url=url+"/domainstudio?ctid="+ctid, json=req, headers=headers, timeout=5)
+            res = await client.post(url=url + "/domainstudio?ctid=" + ctid, json=req, headers=headers, timeout=5)
             logging.info(
                 "Sending REST request to {} in the name of Client: {} .".format(url, ctid))
     except Exception as e:
@@ -33,19 +34,18 @@ async def domainstudio_request(ctid, message=None):
         return {"AutoDNS-API": "Error"}
     return res.json()
 
-# WebsocketHandler for Clients
 
+class AutoDNSWebsocketClientHandler(tornado.websocket.WebSocketHandler, ABC):
+    """WebsocketHandler for Clients
+    one object of this class per client listening for the queue that is created with the ctid of the client"""
 
-class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
-
-    # one per client listening for the queue that was created with the ctid of the client
     async def listen_routine(self):
         while True:
             try:
                 response = await asyncio.wait_for(self.redisqueue.get(), 1)
                 response = str(response)
                 logging.debug("FOUND MESSAGE in Queue: {}".format(response))
-                self.write_message(response)
+                await self.write_message(response)
             except asyncio.TimeoutError:
                 pass
             except asyncio_redis.exceptions.NotConnectedError:
@@ -57,9 +57,9 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
     # allows the socket handler to sort messages into the addressees queue
     async def open(self):
         remote_ip = self.request.headers.get("X-Real-IP") or \
-            self.request.headers.get("X-Forwarded-For") or \
-            self.request.remote_ip
-        self.ctid = str(hash(str(self)))+"_"+str(remote_ip)
+                    self.request.headers.get("X-Forwarded-For") or \
+                    self.request.remote_ip
+        self.ctid = str(hash(str(self))) + "_" + str(remote_ip)
         self.redisqueue = redisqueue.RedisQueue(self.ctid)
         await self.redisqueue.init()
         tornado.ioloop.IOLoop.current().spawn_callback(self.listen_routine)
@@ -70,14 +70,13 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
     # if message is received, decode it from json and pass it authorized to the Json API
     async def on_message(self, message):
         try:
-            logging.debug(
-                "RECEIVED {} from Client: {}!".format(message, self.ctid))
+            logging.debug("RECEIVED {} from Client: {}!".format(message, self.ctid))
             message = json_decode(message)
-        except:
-            self.write_message({"type": "MultiplexerParsingError"})
+        except JSONDecodeError:
+            await self.write_message({"type": "MultiplexerParsingError"})
             return
         rs = await domainstudio_request(self.ctid, message=message)
-        self.write_message(str(rs))
+        await self.write_message(str(rs))
 
     # on close delete queue and disconnect from redis before closing the socket successfully
     def on_close(self):
@@ -89,7 +88,7 @@ class AutoDnsWebsocket(tornado.websocket.WebSocketHandler):
 
 def make_app():
     return tornado.web.Application([
-        (r"/dsws", AutoDnsWebsocket),
+        (r"/dsws", AutoDNSWebsocketClientHandler),
     ])
 
 

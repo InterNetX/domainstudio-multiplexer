@@ -2,7 +2,9 @@ version: "3"
 services:
 
   clienthandler:
-    build: ./clienthandler
+    build:
+      dockerfile: containers/clienthandler/Dockerfile
+      context: .
     restart: always
     ports:
       - "${PROXYPORT}:${PROXYPORT}"
@@ -15,13 +17,15 @@ services:
       PROXY_PROCESS_COUNT: ${PROXY_PROCESS_COUNT}
 
   redis:
-    build: ./redis
+    build: containers/redis
     restart: always
     ports:
       - "6379:6379"
-      
+
   ws-gatehandler:
-    build: ./ws-gatehandler
+    build:
+      dockerfile: containers/ws-gatehandler/Dockerfile
+      context: .
     restart: always
     environment:
       USER: ${AUTODNS_USER}

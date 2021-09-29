@@ -2,15 +2,16 @@
    and returns messages to the redis queues"""
 import asyncio
 import json
+import logging
 import os
 import time
 import unicodedata
-import logging
-from tornado.escape import json_decode, json_encode
+
+import redisqueue
+import requests
 import websockets
 from nicelog import setup_logging
-import requests
-import redisqueue
+from tornado.escape import json_decode, json_encode
 
 
 def get_authorization_token():
