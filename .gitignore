@@ -132,4 +132,4 @@ dmypy.json
 !/utilities/redisqueue/__init__.py
 
 #ide
-.idea/
+.idea/*
