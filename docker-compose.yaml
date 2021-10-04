@@ -2,26 +2,31 @@ version: "3"
 services:
 
   clienthandler:
-    build: ./clienthandler
+    build:
+      dockerfile: containers/clienthandler/Dockerfile
+      context: .
     restart: always
     ports:
-      - "${PROXYPORT}:${PROXYPORT}"
+      - "${PROXY_PORT}:${PROXY_PORT}"
     environment:
       USER: ${AUTODNS_USER}
       PASSWORD: ${AUTODNS_PASSWORD}
-      RESTURL: ${RESTURL}
+      REST_URL: ${REST_URL}
       CONTEXT: ${AUTODNS_CONTEXT}
-      PROXYPORT: ${PROXYPORT}
+      PROXY_PORT: ${PROXY_PORT}
       PROXY_PROCESS_COUNT: ${PROXY_PROCESS_COUNT}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
 
   redis:
-    build: ./redis
+    build: containers/redis
     restart: always
     ports:
       - "6379:6379"
-      
+
   ws-gatehandler:
-    build: ./ws-gatehandler
+    build:
+      dockerfile: containers/ws-gatehandler/Dockerfile
+      context: .
     restart: always
     environment:
       USER: ${AUTODNS_USER}
