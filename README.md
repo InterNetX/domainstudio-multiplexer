@@ -53,7 +53,7 @@ just use docker-compose:
 docker-compose up --env <enf-file>
 ```
 
-### Usage of the Proxy as Client 
+### Usage of the Proxy from the perspective of a Client 
 
 The client can connect to the proxy-url: ws://hostanme:port/dsws and will get its own message queue.
 Afterwards, the client can send a JSON parsable domainstudio-request as specified in:
