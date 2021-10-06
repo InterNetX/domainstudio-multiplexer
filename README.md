@@ -14,7 +14,7 @@
 
 ---
 
-<p align="center"> A Multiplexing-Proxy used for async DomainStudio-Operations. It communicates over a single WebSocket with the DomainStudio and uses each frontend/client connection to redistribute the results so that each client only receives messages that were caused by one of its own requests. The client can send unauthorized messages in JSON parsable format as ws-message to the proxy which will send them to the normal AutoDNS JSON API (authorized via the ProxyUser). These results are then fetched from the WS-Gate and transmitted to the client.
+<p align="center"> A Multiplexing-Proxy used for async DomainStudio-Operations. It communicates over a single WebSocket with the DomainStudio and uses each frontend/client connection to redistribute the results so that each client only receives messages that were caused by one of its own requests. The client can send unauthorized messages in JSON parsable format as ws-message to the proxy which will pass them on to the normal AutoDNS JSON API (authorized via the ProxyUser). These results are then fetched from the WS-Gate and transmitted to the client.
     <br> 
 </p>
 
