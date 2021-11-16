@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.9
 WORKDIR /code
 COPY ./containers/ws-gatehandler/requirements.txt requirements.txt
 RUN pip install -r requirements.txt

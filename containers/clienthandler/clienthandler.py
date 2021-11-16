@@ -76,7 +76,7 @@ class AutoDNSWebsocketClientHandler(tornado.websocket.WebSocketHandler, ABC):
                 response = await asyncio.wait_for(self.redisqueue.get(), 1)
                 response = str(response)
                 logging.debug("FOUND MESSAGE in Queue: {}".format(response))
-                await self.write_message(response)
+                self.write_message(response)
             except asyncio.TimeoutError:
                 pass
             except asyncio_redis.exceptions.NotConnectedError:
@@ -103,16 +103,16 @@ class AutoDNSWebsocketClientHandler(tornado.websocket.WebSocketHandler, ABC):
             message = json_decode(message)
         except JSONDecodeError as e:
             logging.error("JSONDecodeError {e}".format(e=e))
-            await self.write_message({"type": "MultiplexerParsingError"})
+            self.write_message({"type": "MultiplexerParsingError"})
             return
         rs = await self.domainstudio_request(self.ctid, message=message)
-        await self.write_message(str(rs))
+        self.write_message(str(rs))
 
     def on_close(self) -> None:
         """on close delete queue and disconnect from redis before closing the socket successfully"""
         logging.info(
             "Client-Websocket:{} deleting redis-message-queue!".format(self.ctid))
-        asyncio.ensure_future(self.redisqueue.delete_queue_from_redis())
+        asyncio.create_task(self.redisqueue.delete_queue_from_redis())
         logging.info("Client-WebSocket:{} closed!".format(self.ctid))
 
 

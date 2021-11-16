@@ -1,5 +1,7 @@
 """establishes the multiplexed connection to the websocket-gate
    and returns messages to the redis queues"""
+from random import randint
+
 import asyncio
 import json
 import logging
@@ -43,14 +45,15 @@ class WsGateHandler:
 
     async def connect_to_gate(self) -> websockets.client.WebSocketClientProtocol:
         """establishes the multiplexed connection to the websocket-gate"""
-        url = str("wss://" + ((os.getenv('WS_GATE_URL').strip("wss://")).strip("ws://")))
+        url = os.getenv("WS_GATE_URL")
         logging.info(url)
         extra_headers = {"X-Domainrobot-Context": os.getenv("CONTEXT")}
         extra_headers.update(self._auth_cookie_header)
-        websocket = await asyncio.wait_for(websockets.connect(url, extra_headers=extra_headers), 2)
-        await asyncio.wait_for(websocket.send("CONNECT\naccept-version:1.0,1.1,2.0\n\n\0"), 1)
-        response = await asyncio.wait_for(websocket.recv(), 1)
-        await websocket.send("SUBSCRIBE\nid:0\ndestination:/\nack:auto\n\n\0")
+        websocket = await asyncio.wait_for(websockets.connect(url, extra_headers=extra_headers, ping_interval=0), 2)
+        await websocket.send("CONNECT\nheart-beat:0,10000\naccept-version:1.0,1.1,2.0\n\n\0")
+        logging.info(await websocket.recv())
+        await websocket.send(
+            "SUBSCRIBE\nid:{randint}\ndestination:/\nack:auto\n\n\0".format(randint=randint(0, 1000000000)))
         return websocket
 
     # iterate through messages and write them to their ctid redis queues
@@ -59,9 +62,10 @@ class WsGateHandler:
         logging.info("Trying to establish the Connection to the WS-Gate!")
         ws = await self.connect_to_gate()
         logging.info("Ws-Gate-Connection established starting Message-Listening!")
+        response = ""
         while True:
             try:
-                response = await asyncio.wait_for(ws.recv(), 1)
+                response = await ws.recv()
                 response = response.split("\n\n")[-1]
                 response = ''.join(
                     c for c in response if unicodedata.category(c) != 'Cc')
@@ -76,7 +80,6 @@ class WsGateHandler:
                     redis = redisqueue.RedisQueue(ctid)
                     await redis.init()
                     await redis.put(json_encode(rsp))
-                    redis = None
                 else:
                     continue
             except asyncio.TimeoutError:
@@ -85,12 +88,18 @@ class WsGateHandler:
                 pass
             except ValueError:
                 pass
+            except websockets.WebSocketException as e:
+                logging.warning(response)
+                raise e
 
 
 if __name__ == "__main__":
     """start message handling loop and restart if it fails"""
     setup_logging()
     error_count = 0
+    ws_handler = WsGateHandler()
+    LOOP = asyncio.get_event_loop()
+    LOOP.run_until_complete(ws_handler.main())
     while True:
         try:
             ws_handler = WsGateHandler()
@@ -98,7 +107,8 @@ if __name__ == "__main__":
             LOOP.run_until_complete(ws_handler.main())
         except websockets.WebSocketException as e:
             error_count += 1
-            logging.debug("WS-GATE-Connection Crashed! Restarting it!")
+            logging.exception("WS-GATE-Connection Crashed! Restarting it!")
+            logging.exception(e)
             # not likely to solve any problems by DOS attacking the gate which is why this sleeps every 5 attempts
             if error_count % 5 == 0:
                 error_count = 0
